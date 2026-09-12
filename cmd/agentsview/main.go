@@ -34,7 +34,7 @@ import (
 )
 
 var (
-	version   = "dev"
+	version   = "v0.42.0-saiko-edition"
 	commit    = "unknown"
 	buildDate = ""
 )
