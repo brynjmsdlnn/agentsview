@@ -968,7 +968,8 @@ func TestResolveScriptClineRejectsSymlinkedLeafFiles(t *testing.T) {
 		[]byte(`{"messages":[]}`), 0o644,
 	))
 
-	// sess-symlink-msgs: valid metadata, but messages file is a symlink pointing outside root.
+	// sess-symlink-msgs: the primary messages file is a symlink, so reject
+	// the whole session rather than emitting its metadata alone.
 	sess2 := filepath.Join(sessionsDir, "sess-symlink-msgs")
 	require.NoError(t, os.MkdirAll(sess2, 0o755))
 	require.NoError(t, os.WriteFile(
@@ -1001,9 +1002,9 @@ func TestResolveScriptClineRejectsSymlinkedLeafFiles(t *testing.T) {
 		"data/sessions/sess-symlink-meta/sess-symlink-meta.messages.json"),
 		"messages file for session with symlinked metadata must not be emitted")
 
-	assert.True(t, hasRecordWithPathSuffix(records, agentFilePrefix,
+	assert.False(t, hasRecordWithPathSuffix(records, agentFilePrefix,
 		"data/sessions/sess-symlink-msgs/sess-symlink-msgs.json"),
-		"regular metadata file must be emitted")
+		"metadata for a session with symlinked primary messages must not be emitted")
 	assert.False(t, hasRecordWithPathSuffix(records, agentFilePrefix,
 		"data/sessions/sess-symlink-msgs/sess-symlink-msgs.messages.json"),
 		"symlinked messages file must not be emitted")
